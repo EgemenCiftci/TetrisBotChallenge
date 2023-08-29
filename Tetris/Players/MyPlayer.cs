@@ -46,13 +46,12 @@ public class MyPlayer : IPlayer
 
     private static long CalculateScore(bool[,] board)
     {
-        return
-            (GetClearedLines(board) * 10)
-            - (GetHoleCount(board) * 8)
-            - (GetTotalHeight(board) * 4)
-            - (GetMaxHeight(board) * 8)
-            - (GetBumpiness(board) * 3)
-            - (GetToppedOut(board) * 1000000);
+        return (GetClearedLines(board) * 10) +
+               (GetToppedOut(board) * -1000000) +
+               (GetHoleCount(board) * -8) +
+               (GetMaxHeight(board) * -8) +
+               (GetTotalHeight(board) * -4) +
+               (GetBumpiness(board) * -3);
     }
 
     private static bool[,] PlacePiece(bool[,] board, int[] pieceLayout)
