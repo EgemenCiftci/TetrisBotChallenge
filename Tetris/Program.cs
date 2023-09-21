@@ -112,7 +112,7 @@ static void RunRandomSearch(bool useLocalSearch)
 
     ConsoleRenderer.Render = ConsoleRenderer.NullRender;
 
-    double bestScore = 1450;
+    double bestScore = 1500;
     int[] bestParameters = Array.Empty<int>();
     object lockObject = new();
     int numberOfTrials = 1000;
@@ -131,7 +131,7 @@ static void RunRandomSearch(bool useLocalSearch)
         _ = Parallel.For(0, numberOfTrials, t =>
         {
             Random r = new();
-            int[] parameters = new[] { r.Next(0, 10), r.Next(0, 10), r.Next(0, 10), r.Next(0, 10) };
+            int[] parameters = new[] { r.Next(0, 100), r.Next(0, 100), r.Next(0, 100), r.Next(0, 100) };
             int[] scores = CalculateScorePerRound(parameters[0], parameters[1], parameters[2], parameters[3]);
             double score = scores.Average();
 

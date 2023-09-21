@@ -46,10 +46,10 @@ public class MyPlayer : IPlayer
     {
         int[] heights = GetHeights(board, width, height);
 
-        return (GetClearedLines(board, width, height) * clearedLinesWeight) -
-               (GetHoles(board, width, height) * holesWeight) -
-               (GetAggregateHeight(heights) * aggregateHeightWeight) -
-               (GetBumpiness(heights) * bumpinessWeight);
+        return (GetClearedLines(board, width, height) * clearedLinesWeight)
+               - (GetHoles(board, width, height) * holesWeight)
+               - (GetAggregateHeight(heights) * aggregateHeightWeight)
+               - (GetBumpiness(heights) * bumpinessWeight);
     }
 
     private static bool[,] PlacePiece(bool[,] board, int[] pieceLayout, int width, int height)
@@ -93,6 +93,8 @@ public class MyPlayer : IPlayer
     /// We can assign a negative weight to the number of holes.
     /// </summary>
     /// <param name="board"></param>
+    /// <param name="width"></param>
+    /// <param name="height"></param>
     /// <returns></returns>
     private static int GetHoles(bool[,] board, int width, int height)
     {
@@ -123,9 +125,9 @@ public class MyPlayer : IPlayer
 
     /// <summary>
     /// Higher columns can lead to more difficult situations later. 
-    /// Weights for heights could decrease as columns get higher.
+    /// We can assign a negative weight to the sum of the column heights.
     /// </summary>
-    /// <param name="board"></param>
+    /// <param name="heights"></param>
     /// <returns></returns>
     private static int GetAggregateHeight(int[] heights)
     {
@@ -163,7 +165,7 @@ public class MyPlayer : IPlayer
     /// A smoother playing field is generally preferable. 
     /// We can assign a negative weight to the sum of differences between adjacent column heights.
     /// </summary>
-    /// <param name="board"></param>
+    /// <param name="heights"></param>
     /// <returns></returns>
     private static int GetBumpiness(int[] heights)
     {
@@ -182,7 +184,9 @@ public class MyPlayer : IPlayer
     /// We can assign a positive weight to the number of lines cleared in a move.
     /// </summary>
     /// <param name="board"></param>
-    /// <returns>0, 1, 2, 3, 4</returns>
+    /// /// <param name="width"></param>
+    /// /// <param name="height"></param>
+    /// <returns>0, 1, 3, 6, 10</returns>
     private static int GetClearedLines(bool[,] board, int width, int height)
     {
         int clearedLines = 0;
