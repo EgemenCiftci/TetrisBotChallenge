@@ -94,6 +94,10 @@ static int Run(int seed, int steps, IPlayer player)
             state.Apply(player.Step(snapshot));
         }
     }
+    catch (InvalidOperationException ex) when (ex.Message == "Game Over!")
+    {
+        // Game over is a normal end condition, not an error. The current score is valid.
+    }
     catch (Exception ex)
     {
         // Log unexpected exceptions to aid debugging while preserving the original behavior

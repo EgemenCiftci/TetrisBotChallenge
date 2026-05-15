@@ -75,13 +75,17 @@ public class MyPlayer : IPlayer
     private static bool[,] Apply(bool[,] board, int[] pieceLayout, int width, int h)
     {
         bool[,] newBoard = (bool[,])board.Clone();
+        int height = board.GetLength(1);
 
         foreach (int index in pieceLayout)
         {
             int x = index % width;
             int y = (index / width) + h;
 
-            newBoard[x, y] = true;
+            if (x >= 0 && x < width && y >= 0 && y < height)
+            {
+                newBoard[x, y] = true;
+            }
         }
 
         return newBoard;
