@@ -3,35 +3,34 @@ using System.Diagnostics;
 using Tetris;
 using Tetris.Players;
 
-bool isParametersOptimization = AnsiConsole.Prompt(new SelectionPrompt<bool>().Title("Search for optimal parameter weights?").AddChoices(new[] { false, true }).UseConverter(f => f ? "Yes" : "No"));
+bool isParametersOptimization = await AnsiConsole.PromptAsync(new SelectionPrompt<bool>().Title("Search for optimal parameter weights?").AddChoices(false, true).UseConverter(f => f ? "Yes" : "No"));
 const int roundsCount = 1000;
 
 if (isParametersOptimization)
 {
-    string searchType = AnsiConsole.Prompt(new SelectionPrompt<string>().Title("Please select search type.").AddChoices(new[] { "Random", "Brute-force" }));
+    string searchType = await AnsiConsole.PromptAsync(new SelectionPrompt<string>().Title("Please select search type.").AddChoices("Random", "Brute-force"));
 
     switch (searchType)
     {
-        default:
-        case "Random":
-            bool useLocalSearch = AnsiConsole.Prompt(new SelectionPrompt<bool>().Title("Use local search?").AddChoices(new[] { false, true }).UseConverter(f => f ? "Yes" : "No"));
-            RunRandomSearch(useLocalSearch);
-            break;
         case "Brute-force":
             RunBruteForceSearch();
+            break;
+        default:
+            bool useLocalSearch = await AnsiConsole.PromptAsync(new SelectionPrompt<bool>().Title("Use local search?").AddChoices(false, true).UseConverter(f => f ? "Yes" : "No"));
+            RunRandomSearch(useLocalSearch);
             break;
     }
 }
 else
 {
-    string playerType = AnsiConsole.Prompt(new SelectionPrompt<string>().Title("Please select player.").AddChoices(new[] { "Console", "Random", "My" }));
+    string playerType = await AnsiConsole.PromptAsync(new SelectionPrompt<string>().Title("Please select player.").AddChoices("Console", "Random", "My"));
     IPlayer player = playerType switch
     {
         "Random" => new RandomPlayer(),
         "My" => new MyPlayer(),
         _ => new ConsolePlayer(),
     };
-    bool isTournament = AnsiConsole.Prompt(new SelectionPrompt<bool>().Title("Run tournament?").AddChoices(new[] { false, true }).UseConverter(f => f ? "Yes" : "No"));
+    bool isTournament = await AnsiConsole.PromptAsync(new SelectionPrompt<bool>().Title("Run tournament?").AddChoices(false, true).UseConverter(f => f ? "Yes" : "No"));
 
     if (isTournament)
     {
@@ -57,16 +56,14 @@ static void RunTournament(IPlayer player)
         ConsoleRenderer.Render = ConsoleRenderer.NullRender;
     }
 
-    int[] rounds = Enumerable.Range(0, roundsCount).ToArray();
+    int[] rounds = [.. Enumerable.Range(0, roundsCount)];
     int score = 0;
-    AnsiConsole.Progress().Columns(new ProgressColumn[]
-    {
+    AnsiConsole.Progress().Columns(
         new TaskDescriptionColumn(),
         new ProgressBarColumn(),
         new PercentageColumn(),
         new RemainingTimeColumn(),
-        new SpinnerColumn()
-    }).Start(ctx =>
+        new SpinnerColumn()).Start(ctx =>
     {
         ProgressTask task = ctx.AddTask("Running tournament", maxValue: roundsCount);
 
@@ -97,9 +94,12 @@ static int Run(int seed, int steps, IPlayer player)
             state.Apply(player.Step(snapshot));
         }
     }
-    catch (Exception)
+    catch (Exception ex)
     {
-        //Console.WriteLine($"End of Game: {ex.Message}");
+        // Log unexpected exceptions to aid debugging while preserving the original behavior
+        // of returning the current state score. This handles the exception instead of
+        // silently swallowing it.
+        AnsiConsole.WriteException(ex);
     }
 
     return state.Score;
@@ -117,21 +117,19 @@ static void RunRandomSearch(bool useLocalSearch)
     object lockObject = new();
     int numberOfTrials = 1000;
 
-    AnsiConsole.Progress().Columns(new ProgressColumn[]
-    {
+    AnsiConsole.Progress().Columns(
         new TaskDescriptionColumn(),
         new ProgressBarColumn(),
         new PercentageColumn(),
         new RemainingTimeColumn(),
-        new SpinnerColumn()
-    }).Start(ctx =>
+        new SpinnerColumn()).Start(ctx =>
     {
         ProgressTask task = ctx.AddTask("Random search", maxValue: numberOfTrials);
 
         _ = Parallel.For(0, numberOfTrials, t =>
         {
             Random r = new();
-            int[] parameters = new[] { r.Next(0, 100), r.Next(0, 100), r.Next(0, 100), r.Next(0, 100) };
+            int[] parameters = [r.Next(0, 100), r.Next(0, 100), r.Next(0, 100), r.Next(0, 100)];
             int[] scores = CalculateScorePerRound(parameters[0], parameters[1], parameters[2], parameters[3]);
             double score = scores.Average();
 
@@ -172,14 +170,12 @@ static void RunBruteForceSearch()
     int[] bestParameters = Array.Empty<int>();
     object lockObject = new();
 
-    AnsiConsole.Progress().Columns(new ProgressColumn[]
-    {
+    AnsiConsole.Progress().Columns(
         new TaskDescriptionColumn(),
         new ProgressBarColumn(),
         new PercentageColumn(),
         new RemainingTimeColumn(),
-        new SpinnerColumn()
-    }).Start(ctx =>
+        new SpinnerColumn()).Start(ctx =>
     {
         ProgressTask task = ctx.AddTask("Brute-force", maxValue: 10 * 10 * 10 * 10);
 
@@ -191,7 +187,7 @@ static void RunBruteForceSearch()
                 {
                     for (int d = 395; d < 405; d++)
                     {
-                        int[] parameters = new[] { a, b, c, d };
+                        int[] parameters = [a, b, c, d];
                         int[] scores = CalculateScorePerRound(parameters[0], parameters[1], parameters[2], parameters[3]);
                         double score = scores.Average();
 
@@ -221,10 +217,10 @@ static int[] CalculateScorePerRound(int a, int b, int c, int d)
 {
     MyPlayer player = new()
     {
-        aggregateHeightWeight = a,
-        clearedLinesWeight = b,
-        holesWeight = c,
-        bumpinessWeight = d
+        AggregateHeightWeight = a,
+        ClearedLinesWeight = b,
+        HolesWeight = c,
+        BumpinessWeight = d
     };
 
     int[] rounds = Enumerable.Range(0, roundsCount).ToArray();
@@ -254,7 +250,7 @@ static void LocalSearch(double score, int[] parameters, Stopwatch sw, ProgressCo
             {
                 for (int d = parameters[3] - 1; d < parameters[3] + 2; d++)
                 {
-                    int[] par = new[] { a, b, c, d };
+                    int[] par = [a, b, c, d];
                     int[] scores = CalculateScorePerRound(par[0], par[1], par[2], par[3]);
                     double score = scores.Average();
 

@@ -8,8 +8,8 @@ public class RandomPlayer : IPlayer
 
     public Command Step(StateSnapshot snapshot)
     {
-        int rotation = random.Next(snapshot.piece.rotations);
-        GamePiece piece = snapshot.piece.Rotate(rotation);
+        int rotation = random.Next(snapshot.Piece.rotations);
+        GamePiece piece = snapshot.Piece.Rotate(rotation);
         int offset = random.Next(GameState.Width - piece.width + 1);
 
         ConsoleRenderer.Render(offset, rotation, snapshot);

@@ -29,7 +29,7 @@
 public class GamePiece
 {
     /// <summary> Collection of all possible Pieces </summary>
-    public static readonly Dictionary<string, GamePiece> All = Init();
+    public static readonly IReadOnlyDictionary<string, GamePiece> All = Init();
 
     /// <summary> Type of Piece: O, I, T, S, Z, L or J</summary>
     public readonly char type;

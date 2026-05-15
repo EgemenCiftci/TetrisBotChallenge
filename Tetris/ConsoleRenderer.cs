@@ -8,7 +8,7 @@ public static class ConsoleRenderer
 
     public static void ConsoleRender(int offset, int rotation, StateSnapshot snapshot, int delay = 1000)
     {
-        GamePiece piece = snapshot.piece.Rotate(rotation);
+        GamePiece piece = snapshot.Piece.Rotate(rotation);
 
         Console.Clear();
 
@@ -33,7 +33,7 @@ public static class ConsoleRenderer
             Console.WriteLine('#');
         }
         Console.WriteLine(new string('#', (GameState.Width * 2) + 2));
-        Console.WriteLine($"Piece: {piece} Score: {snapshot.score}");
+        Console.WriteLine($"Piece: {piece} Score: {snapshot.Score}");
         Console.WriteLine($"Offset: {offset} Rotation: {rotation}");
 
         if (delay > 0)
@@ -44,5 +44,6 @@ public static class ConsoleRenderer
 
     public static void NullRender(int offset, int rotation, StateSnapshot snapshot, int delay = 1000)
     {
+        // Method intentionally left empty.
     }
 }

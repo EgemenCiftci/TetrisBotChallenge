@@ -10,7 +10,7 @@ public class ConsolePlayer : IPlayer
     {
         int offset = 0;
         int rotation = 0;
-        GamePiece piece = snapshot.piece;
+        GamePiece piece = snapshot.Piece;
 
         while (true)
         {

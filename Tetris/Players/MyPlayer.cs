@@ -2,16 +2,16 @@
 
 public class MyPlayer : IPlayer
 {
-    public int aggregateHeightWeight = 89;
-    public int clearedLinesWeight = 92;
-    public int holesWeight = 89;
-    public int bumpinessWeight = 40;
+    public int AggregateHeightWeight { get; set; } = 89;
+    public int ClearedLinesWeight { get; set; } = 92;
+    public int HolesWeight { get; set; } = 89;
+    public int BumpinessWeight { get; set; } = 40;
 
     public void Init() { }
 
     public Command Step(StateSnapshot snapshot)
     {
-        GamePiece currentPiece = snapshot.piece;
+        GamePiece currentPiece = snapshot.Piece;
         int bestObjValue = int.MinValue;
         Command bestMove = new(0, 0);
 
@@ -46,10 +46,10 @@ public class MyPlayer : IPlayer
     {
         int[] heights = GetHeights(board, width, height);
 
-        return (GetClearedLines(board, width, height) * clearedLinesWeight)
-               - (GetHoles(board, width, height) * holesWeight)
-               - (GetAggregateHeight(heights) * aggregateHeightWeight)
-               - (GetBumpiness(heights) * bumpinessWeight);
+        return (GetClearedLines(board, width, height) * ClearedLinesWeight)
+               - (GetHoles(board, width, height) * HolesWeight)
+               - (GetAggregateHeight(heights) * AggregateHeightWeight)
+               - (GetBumpiness(heights) * BumpinessWeight);
     }
 
     private static bool[,] PlacePiece(bool[,] board, int[] pieceLayout, int width, int height)
@@ -63,8 +63,8 @@ public class MyPlayer : IPlayer
 
                 if (y >= height || board[x, y])
                 {
-                    h--;
-                    return Apply(board, pieceLayout, width, h);
+                    int landingH = h - 1;
+                    return Apply(board, pieceLayout, width, landingH);
                 }
             }
         }

@@ -1,15 +1,9 @@
 ﻿namespace Tetris;
 
-public class Command
+public class Command(int offset, int rotation)
 {
     /// <summary> Horizontal offset </summary>
-    public readonly int offset;
+    public readonly int offset = offset;
     /// <summary> Index of rotation </summary>
-    public readonly int rotation;
-
-    public Command(int offset, int rotation)
-    {
-        this.offset = offset;
-        this.rotation = rotation;
-    }
+    public readonly int rotation = rotation;
 }

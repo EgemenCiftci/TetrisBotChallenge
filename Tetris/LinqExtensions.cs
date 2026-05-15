@@ -13,7 +13,7 @@ public static class LinqExtensions
         where TSource : struct, INumber<TSource>
         where TResult : struct, INumber<TResult>
     {
-        TSource[] array = source.ToArray();
+        TSource[] array = [.. source];
         int length = array.Length;
         if (length == 0)
         {

@@ -21,8 +21,8 @@ public class GameState
 
     public void CopyTo(StateSnapshot snapshot)
     {
-        snapshot.score = Score;
-        snapshot.piece = Piece;
+        snapshot.Score = Score;
+        snapshot.Piece = Piece;
 
         for (int y = 0, i = 0; y < Height; y++)
         {
@@ -39,11 +39,13 @@ public class GameState
 
         if (!MoveToNextLine(layout))
         {
-            throw new Exception("Game Over!");
+            throw new InvalidOperationException("Game Over!");
         }
 
         while (MoveToNextLine(layout))
         {
+            // Advance the piece downward until it can no longer move.
+            // MoveToNextLine modifies the layout on each successful call.
         }
 
         foreach (int index in layout)
