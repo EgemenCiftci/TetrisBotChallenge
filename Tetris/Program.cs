@@ -167,7 +167,7 @@ static void RunBruteForceSearch()
     ConsoleRenderer.Render = ConsoleRenderer.NullRender;
 
     double bestScore = 1500;
-    int[] bestParameters = Array.Empty<int>();
+    int[] bestParameters = [];
     object lockObject = new();
 
     AnsiConsole.Progress().Columns(
