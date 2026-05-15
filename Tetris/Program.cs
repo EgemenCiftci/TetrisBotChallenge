@@ -128,14 +128,13 @@ static void RunRandomSearch(bool useLocalSearch)
 
         _ = Parallel.For(0, numberOfTrials, t =>
         {
-            Random r = new();
-            int[] parameters = [r.Next(0, 100), r.Next(0, 100), r.Next(0, 100), r.Next(0, 100)];
+            int[] parameters = [Random.Shared.Next(0, 100), Random.Shared.Next(0, 100), Random.Shared.Next(0, 100), Random.Shared.Next(0, 100)];
             int[] scores = CalculateScorePerRound(parameters[0], parameters[1], parameters[2], parameters[3]);
             double score = scores.Average();
 
             lock (lockObject)
             {
-                if (score >= bestScore)
+                if (score > bestScore)
                 {
                     bestScore = score;
                     bestParameters = parameters;
@@ -177,7 +176,8 @@ static void RunBruteForceSearch()
         new RemainingTimeColumn(),
         new SpinnerColumn()).Start(ctx =>
     {
-        ProgressTask task = ctx.AddTask("Brute-force", maxValue: 10 * 10 * 10 * 10);
+        int totalIterations = 10 * 10 * 10 * 10;
+        ProgressTask task = ctx.AddTask("Brute-force", maxValue: totalIterations);
 
         _ = Parallel.For(885, 895, a =>
         {
@@ -256,7 +256,7 @@ static void LocalSearch(double score, int[] parameters, Stopwatch sw, ProgressCo
 
                     lock (lockObject)
                     {
-                        if (score > bestScore)
+                        if (score >= bestScore)
                         {
                             bestScore = score;
                             bestParameters = par;
